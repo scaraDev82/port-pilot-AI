@@ -1,7 +1,7 @@
 import {readFile} from "node:fs/promises";
 import path from "node:path";
 import {execa} from "execa";
-import type {Framework, PortProcessInfo, ProjectInfo} from "./types.js";
+import type {Framework, KillResult, PortProcessInfo, ProjectInfo} from "./types.js";
 
 interface LsofRow {
   command: string;
@@ -35,14 +35,38 @@ export async function getPortDetails(port: number): Promise<PortProcessInfo | nu
   return ports.find((item) => item.port === port) ?? null;
 }
 
-export async function killPortProcess(port: number): Promise<PortProcessInfo | null> {
+export async function killPortProcess(port: number): Promise<KillResult | null> {
   const details = await getPortDetails(port);
   if (!details) {
     return null;
   }
 
-  await execa("kill", [String(details.pid)]);
-  return details;
+  return killProcess(details);
+}
+
+export async function openPortInBrowser(port: number): Promise<void> {
+  const url = `http://localhost:${port}`;
+  await openTarget(url);
+}
+
+export async function openProjectInEditor(cwd: string): Promise<"Cursor" | "VS Code"> {
+  if (await tryOpenWithCommand("cursor", [cwd])) {
+    return "Cursor";
+  }
+
+  if (await tryOpenWithMacApp("Cursor", cwd)) {
+    return "Cursor";
+  }
+
+  if (await tryOpenWithCommand("code", [cwd])) {
+    return "VS Code";
+  }
+
+  if (await tryOpenWithMacApp("Visual Studio Code", cwd)) {
+    return "VS Code";
+  }
+
+  throw new Error("Could not open the project folder in Cursor or VS Code.");
 }
 
 async function listListeningRows(): Promise<LsofRow[]> {
@@ -262,4 +286,82 @@ async function runCommand(command: string, args: string[]): Promise<string> {
   } catch {
     return "";
   }
+}
+
+async function killProcess(details: PortProcessInfo): Promise<KillResult> {
+  process.kill(details.pid, "SIGTERM");
+  await delay(1000);
+
+  if (!(await processExists(details.pid))) {
+    return {process: details, signal: "SIGTERM"};
+  }
+
+  process.kill(details.pid, "SIGKILL");
+  return {process: details, signal: "SIGKILL"};
+}
+
+async function processExists(pid: number): Promise<boolean> {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    const code = getErrorCode(error);
+    if (code === "ESRCH") {
+      return false;
+    }
+
+    if (code === "EPERM") {
+      return true;
+    }
+
+    return false;
+  }
+}
+
+async function openTarget(target: string): Promise<void> {
+  if (process.platform === "darwin") {
+    await execa("open", [target]);
+    return;
+  }
+
+  if (process.platform === "win32") {
+    await execa("cmd", ["/c", "start", "", target]);
+    return;
+  }
+
+  await execa("xdg-open", [target]);
+}
+
+async function tryOpenWithCommand(command: string, args: string[]): Promise<boolean> {
+  try {
+    await execa(command, args);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function tryOpenWithMacApp(appName: string, target: string): Promise<boolean> {
+  if (process.platform !== "darwin") {
+    return false;
+  }
+
+  try {
+    await execa("open", ["-a", appName, target]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function getErrorCode(error: unknown): string | undefined {
+  return typeof error === "object" && error !== null && "code" in error
+    ? String((error as {code?: string}).code)
+    : undefined;
 }

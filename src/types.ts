@@ -25,3 +25,8 @@ export interface PortProcessInfo {
   projectName: string | null;
   framework: Framework;
 }
+
+export interface KillResult {
+  process: PortProcessInfo;
+  signal: "SIGTERM" | "SIGKILL";
+}

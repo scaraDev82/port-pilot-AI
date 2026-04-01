@@ -26,9 +26,9 @@ export function formatTable(rows: PortProcessInfo[]): string {
     .join("  ");
 
   const body = matrix
-    .map((row) =>
+    .map((row, rowIndex) =>
       row
-        .map((cell, index) => colorizeCell(index, cell).padEnd(widths[index]))
+        .map((cell, index) => colorizeCell(rows[rowIndex], index, cell).padEnd(widths[index]))
         .join("  ")
     )
     .join("\n");
@@ -63,14 +63,39 @@ export function formatMemory(rssKb: number | null): string {
   return `${mb.toFixed(mb >= 100 ? 0 : 1)} MB`;
 }
 
-function colorizeCell(index: number, value: string): string {
+export function isNodeRuntime(command: string): boolean {
+  const normalized = command.toLowerCase();
+  return normalized.includes("node") || normalized.includes("deno") || normalized.includes("bun");
+}
+
+export function isDevProcess(row: PortProcessInfo): boolean {
+  return row.framework !== "Unknown" || isNodeRuntime(row.command);
+}
+
+export function isHighMemoryProcess(row: PortProcessInfo): boolean {
+  if (row.rssKb === null) {
+    return false;
+  }
+
+  return row.rssKb / 1024 > 500;
+}
+
+function colorizeCell(row: PortProcessInfo, index: number, value: string): string {
+  let styled = value;
+
   if (index === 0) {
-    return chalk.cyan(value);
+    styled = chalk.cyan(value);
+  } else if (index === 2) {
+    styled = value === "Unknown" ? chalk.gray(value) : chalk.green(value);
+  } else if (index === 4 && isHighMemoryProcess(row)) {
+    styled = chalk.red(value);
   }
 
-  if (index === 2) {
-    return value === "Unknown" ? chalk.gray(value) : chalk.green(value);
+  if (isHighMemoryProcess(row) && index !== 4) {
+    styled = chalk.red(styled);
+  } else if (!isDevProcess(row)) {
+    styled = chalk.dim(styled);
   }
 
-  return value;
+  return styled;
 }

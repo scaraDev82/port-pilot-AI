@@ -18,8 +18,14 @@ program
 program
   .command("list")
   .description("Print a static table of all listening ports.")
-  .action(async () => {
+  .option("--json", "Output the listening port data as JSON")
+  .action(async (options: {json?: boolean}) => {
     const rows = await getListeningPorts();
+    if (options.json) {
+      console.log(JSON.stringify(rows.map(toJsonRow), null, 2));
+      return;
+    }
+
     console.log(formatTable(rows));
   });
 
@@ -46,15 +52,19 @@ program
   .argument("<port>", "Port number to kill")
   .action(async (portText: string) => {
     const port = parsePort(portText);
-    const row = await killPortProcess(port);
+    const result = await killPortProcess(port);
 
-    if (!row) {
+    if (!result) {
       console.log(chalk.yellow(`Port ${port} is already free.`));
       process.exitCode = 1;
       return;
     }
 
-    console.log(chalk.green(`Killed ${row.command} (PID ${row.pid}) on port ${port}.`));
+    console.log(
+      chalk.green(
+        `Killed ${result.process.command} (PID ${result.process.pid}) on port ${port} with ${result.signal}.`
+      )
+    );
   });
 
 program.parseAsync(process.argv).catch((error: unknown) => {
@@ -70,4 +80,16 @@ function parsePort(value: string): number {
   }
 
   return port;
+}
+
+function toJsonRow(row: Awaited<ReturnType<typeof getListeningPorts>>[number]) {
+  return {
+    port: row.port,
+    pid: row.pid,
+    command: row.command,
+    projectName: row.projectName,
+    framework: row.framework,
+    memoryKB: row.rssKb,
+    uptime: row.elapsed
+  };
 }
