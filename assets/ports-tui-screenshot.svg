@@ -1,0 +1,27 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="900" fill="#0B1020"/>
+  <rect x="60" y="48" width="1280" height="804" rx="20" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <circle cx="102" cy="88" r="10" fill="#FB7185"/>
+  <circle cx="134" cy="88" r="10" fill="#FBBF24"/>
+  <circle cx="166" cy="88" r="10" fill="#34D399"/>
+  <text x="220" y="96" fill="#CBD5E1" font-family="Menlo, Monaco, Consolas, monospace" font-size="28">ports</text>
+  <text x="92" y="146" fill="#22D3EE" font-family="Menlo, Monaco, Consolas, monospace" font-size="30" font-weight="700">ports</text>
+  <text x="92" y="182" fill="#94A3B8" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">Live listening TCP ports. Refreshes every 3 seconds.</text>
+  <text x="92" y="238" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="24" font-weight="700">PORT   PROJECT                FRAMEWORK   PID      MEM       UPTIME       COMMAND</text>
+  <text x="92" y="274" fill="#94A3B8" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">Filter: dev ports  Search: app</text>
+  <rect x="86" y="304" width="1228" height="42" rx="8" fill="#22D3EE"/>
+  <text x="100" y="332" fill="#020617" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">3000   port-pilot-ai          Vite        18244    164 MB    00:12        node</text>
+  <text x="92" y="388" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">4173   docs-site              Astro       19328    218 MB    01:04        node</text>
+  <text x="92" y="430" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">8080   api-server             Unknown     20591    92.4 MB   02:18        bun</text>
+  <text x="92" y="472" fill="#64748B" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">5432   -                      Unknown     1290     84.1 MB   1-04:08      postgres</text>
+  <text x="92" y="514" fill="#EF4444" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">11434  -                      Unknown     8871     812 MB    05:33        ollama</text>
+  <rect x="92" y="560" width="1210" height="170" rx="12" fill="#0F172A" stroke="#475569"/>
+  <text x="114" y="598" fill="#4ADE80" font-family="Menlo, Monaco, Consolas, monospace" font-size="24">Selected port details</text>
+  <text x="114" y="634" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="20">Port: 3000</text>
+  <text x="114" y="664" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="20">Project: port-pilot-ai</text>
+  <text x="114" y="694" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="20">Framework: Vite    PID: 18244    Memory: 164 MB    Uptime: 00:12</text>
+  <text x="114" y="724" fill="#E2E8F0" font-family="Menlo, Monaco, Consolas, monospace" font-size="20">Command: node    Working dir: /Users/marta/Code/port-pilot-AI</text>
+  <text x="92" y="778" fill="#CBD5E1" font-family="Menlo, Monaco, Consolas, monospace" font-size="22">Updated 1:42:18 PM</text>
+  <rect x="92" y="800" width="1210" height="38" rx="10" fill="#111827" stroke="#475569"/>
+  <text x="112" y="826" fill="#94A3B8" font-family="Menlo, Monaco, Consolas, monospace" font-size="18">↑↓ Move   / Search   Enter Details   F Filter   R Refresh   K Kill   O Open localhost   E Open project   Q Quit</text>
+</svg>
